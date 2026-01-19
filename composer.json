@@ -1,0 +1,28 @@
+{
+  "$schema": "https://getcomposer.org/schema.json",
+  "name": "blogavel/blogavel",
+  "description": "Blogavel - a blog/CMS package for Laravel.",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "illuminate/support": "^12.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Blogavel\\Blogavel\\": "src/"
+    }
+  },
+  "suggest": {
+    "laravel/sanctum": "Required for Blogavel API admin auth when blogavel.api_admin_auth is set to sanctum."
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Blogavel\\Blogavel\\BlogavelServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
