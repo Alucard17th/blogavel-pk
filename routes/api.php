@@ -28,6 +28,10 @@ Route::middleware(['api'])->prefix('api')->group(function () {
         }
 
         $adminMiddleware = ['auth:sanctum'];
+
+        if ((bool) config('blogavel.manage_blog_gate', false)) {
+            $adminMiddleware[] = 'can:manage-blog';
+        }
     }
 
     Route::get($prefix.'/health', function () {

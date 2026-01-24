@@ -29,6 +29,10 @@ Route::middleware(['web'])->group(function () {
     $adminPrefix = config('blogavel.admin_prefix', 'admin');
     $adminMiddleware = config('blogavel.admin_middleware', ['web', 'auth']);
 
+    if ((bool) config('blogavel.manage_blog_gate', false)) {
+        $adminMiddleware = array_values(array_unique(array_merge((array) $adminMiddleware, ['can:manage-blog'])));
+    }
+
     Route::middleware($adminMiddleware)->prefix($prefix.'/'.$adminPrefix)->group(function () {
         Route::get('posts', [AdminPostController::class, 'index'])->name('blogavel.admin.posts.index');
         Route::get('posts/create', [AdminPostController::class, 'create'])->name('blogavel.admin.posts.create');

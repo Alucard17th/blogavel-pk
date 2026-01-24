@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Blogavel\Blogavel;
 
 use Blogavel\Blogavel\Console\Commands\BlogavelDemoCommand;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 final class BlogavelServiceProvider extends ServiceProvider
@@ -40,5 +41,36 @@ final class BlogavelServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/lang' => $this->app->langPath('vendor/blogavel'),
         ], 'blogavel-lang');
+
+        $this->configureAuthorization();
+    }
+
+    private function configureAuthorization(): void
+    {
+        if (! (bool) config('blogavel.manage_blog_gate', false)) {
+            return;
+        }
+
+        if (Gate::has('manage-blog')) {
+            return;
+        }
+
+        Gate::define('manage-blog', function ($user): bool {
+            if ((bool) config('blogavel.manage_blog_allow_local', true) && app()->isLocal()) {
+                return true;
+            }
+
+            $emails = (array) config('blogavel.manage_blog_admin_emails', []);
+            if (count($emails) > 0) {
+                return in_array((string) $user->email, array_map('strval', $emails), true);
+            }
+
+            $ids = (array) config('blogavel.manage_blog_admin_ids', []);
+            if (count($ids) > 0) {
+                return in_array((int) $user->getAuthIdentifier(), array_map('intval', $ids), true);
+            }
+
+            return false;
+        });
     }
 }
