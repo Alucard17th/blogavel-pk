@@ -20,7 +20,7 @@ It ships:
 Install via Composer:
 
 ```bash
-composer require blogavel/blogavel
+composer require alucard17th/blogavel-pk
 ```
 
 ### Publish configuration (recommended)

@@ -1,6 +1,6 @@
 {
   "$schema": "https://getcomposer.org/schema.json",
-  "name": "blogavel/blogavel",
+  "name": "alucard17th/blogavel-pk",
   "description": "Blogavel - a blog/CMS package for Laravel.",
   "type": "library",
   "license": "MIT",
