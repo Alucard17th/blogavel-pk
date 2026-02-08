@@ -25,6 +25,11 @@ final class PostController extends Controller
             'tags.*' => ['integer', 'exists:blogavel_tags,id'],
         ]);
 
+        $user = $request->user();
+        if ($user !== null) {
+            $data['author_id'] = $user->getAuthIdentifier();
+        }
+
         if (! isset($data['slug']) || $data['slug'] === '') {
             $data['slug'] = Str::slug($data['title']);
         }
@@ -35,7 +40,7 @@ final class PostController extends Controller
         $post = Post::create($data);
         $post->tags()->sync($tagIds);
 
-        $post->load(['category', 'tags', 'featuredMedia']);
+        $post->load(['category', 'tags', 'featuredMedia', 'author']);
 
         return (new PostResource($post))->response()->setStatusCode(201);
     }

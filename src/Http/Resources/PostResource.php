@@ -21,6 +21,11 @@ final class PostResource extends JsonResource
             'content' => $this->content,
             'status' => $this->status,
             'published_at' => optional($this->published_at)?->toISOString(),
+            'author' => $this->whenLoaded('author', fn () => [
+                'id' => $this->author?->getAuthIdentifier(),
+                'name' => $this->author?->name,
+                'email' => $this->author?->email,
+            ]),
             'category' => $this->whenLoaded('category', fn () => new CategoryResource($this->category)),
             'tags' => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
             'featured_media' => $this->whenLoaded('featuredMedia', fn () => new MediaResource($this->featuredMedia)),

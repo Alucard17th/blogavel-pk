@@ -85,6 +85,8 @@ final class PostsTest extends TestCase
         $create->assertStatus(201);
         $postId = $create->json('data.id');
 
+        $this->assertSame($user->id, Post::query()->findOrFail($postId)->author_id);
+
         $update = $this->putJson("/api/blogavel/v1/admin/posts/{$postId}", [
             'title' => 'Updated',
             'content' => 'Body 2',

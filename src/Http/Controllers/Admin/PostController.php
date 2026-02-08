@@ -49,6 +49,11 @@ final class PostController extends Controller
             'featured_image' => ['nullable', 'file', 'image', 'max:5120'],
         ]);
 
+        $user = $request->user();
+        if ($user !== null) {
+            $data['author_id'] = $user->getAuthIdentifier();
+        }
+
         if (! isset($data['slug']) || $data['slug'] === '') {
             $data['slug'] = Str::slug($data['title']);
         }

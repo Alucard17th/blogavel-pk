@@ -1,5 +1,9 @@
 <h1>{{ $post->title }}</h1>
 
+@if ($post->author)
+    <p>By {{ $post->author->name }}</p>
+@endif
+
 @if ($post->featuredMedia)
     <div>
         <img src="{{ \Illuminate\Support\Facades\Storage::disk($post->featuredMedia->disk)->url($post->featuredMedia->path) }}" alt="" style="max-width:100%" />

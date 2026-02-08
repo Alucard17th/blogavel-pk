@@ -13,7 +13,7 @@ final class PostController extends Controller
     public function index(Request $request)
     {
         $posts = Post::query()
-            ->with('featuredMedia')
+            ->with(['featuredMedia', 'author'])
             ->where('status', 'published')
             ->orderByDesc('published_at')
             ->orderByDesc('id')
@@ -30,6 +30,7 @@ final class PostController extends Controller
 
         $post->load([
             'featuredMedia',
+            'author',
             'comments' => function ($query) {
                 $query
                     ->where('status', 'approved')

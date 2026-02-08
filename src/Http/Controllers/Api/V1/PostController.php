@@ -14,7 +14,7 @@ final class PostController extends Controller
     public function index(Request $request)
     {
         $posts = Post::query()
-            ->with(['category', 'tags', 'featuredMedia'])
+            ->with(['category', 'tags', 'featuredMedia', 'author'])
             ->where('status', 'published')
             ->orderByDesc('published_at')
             ->orderByDesc('id')
@@ -27,7 +27,7 @@ final class PostController extends Controller
     {
         abort_unless($post->status === 'published', 404);
 
-        $post->load(['category', 'tags', 'featuredMedia']);
+        $post->load(['category', 'tags', 'featuredMedia', 'author']);
 
         return new PostResource($post);
     }

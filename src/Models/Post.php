@@ -21,6 +21,7 @@ final class Post extends Model
     protected $fillable = [
         'category_id',
         'featured_media_id',
+        'author_id',
         'title',
         'slug',
         'content',
@@ -59,6 +60,13 @@ final class Post extends Model
     public function featuredMedia()
     {
         return $this->belongsTo(Media::class, 'featured_media_id');
+    }
+
+    public function author()
+    {
+        $userModel = (string) config('auth.providers.users.model');
+
+        return $this->belongsTo($userModel, 'author_id');
     }
 
     public function comments()
