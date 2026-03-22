@@ -32,7 +32,7 @@
     @if ($media->count() === 0)
         <p>No media.</p>
     @else
-        <table>
+        <table class="admin-table">
             <thead>
                 <tr>
                     <th>ID</th>

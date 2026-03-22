@@ -115,7 +115,7 @@
 
         p { margin: 10px 0; color: var(--muted); }
 
-        table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; background: rgba(15,23,42,.02); }
+        table.admin-table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; background: rgba(15,23,42,.02); }
         thead th {
             text-align: left;
             font-size: 12px;

@@ -18,7 +18,7 @@
     @if ($posts->count() === 0)
         <p>No posts.</p>
     @else
-        <table>
+        <table class="admin-table">
             <thead>
                 <tr>
                     <th>ID</th>

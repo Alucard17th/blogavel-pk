@@ -3,42 +3,11 @@
 @section('title', 'Blogavel Admin - Create Post')
 
 @push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.css" rel="stylesheet"/>
     <style>
-        .editor {
-            border: 1px solid rgba(15,23,42,.14);
-            border-radius: 12px;
-            overflow: hidden;
-            background: rgba(255,255,255,.95);
-        }
-
-        .editor .ql-toolbar.ql-snow {
-            border: 0;
-            border-bottom: 1px solid rgba(15,23,42,.14);
-        }
-
-        .editor .ql-container.ql-snow {
-            border: 0;
-        }
-
-        .editor .ql-toolbar button,
-        .editor .ql-toolbar button:hover,
-        .editor .ql-toolbar button:active {
-            padding: 0;
-            border: 0;
-            background: transparent;
-            border-radius: 4px;
-            box-shadow: none;
-            font-weight: 400;
-        }
-
-        .editor .ql-toolbar button {
-            cursor: pointer;
-        }
-
-        .editor .ql-editor {
-            font-family: inherit;
-            color: var(--text);
+        .ql-editor .ql-table-better {
+            width: unset;
         }
     </style>
 @endpush
@@ -135,28 +104,64 @@
             <div>
                 <label>Content</label>
                 <textarea id="content" name="content" style="display:none">{{ old('content') }}</textarea>
-                <div class="editor">
-                    <div id="content-toolbar"></div>
-                    <div id="content-editor" style="min-height:260px">{!! old('content') !!}</div>
-                </div>
+                <div id="root" style="margin-bottom:14px; position:relative; height:360px"></div>
                 @error('content')<div class="error">{{ $message }}</div>@enderror
             </div>
         </div>
 
-        <div class="actions" style="margin-top:14px; position:relative; z-index:2; background:var(--card); padding-top:10px">
+        <div class="actions">
             <button type="submit" class="btn-primary">Save</button>
         </div>
     </form>
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.js"></script>
     <script>
         (function () {
-            var editorEl = document.getElementById('content-editor');
             var inputEl = document.getElementById('content');
-            var toolbarEl = document.getElementById('content-toolbar');
-            if (!editorEl || !inputEl) return;
+            var rootEl = document.getElementById('root');
+            if (!rootEl || !inputEl) return;
+
+            Quill.register({
+                'modules/table-better': QuillTableBetter
+            }, true);
+
+            var toolbarOptions = [
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                ['link', 'image', 'video', 'formula'],
+                [{ 'header': 1 }, { 'header': 2 }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
+                [{ 'script': 'sub'}, { 'script': 'super' }],
+                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                [{ 'direction': 'rtl' }],
+                [{ 'size': ['small', false, 'large', 'huge'] }],
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'font': [] }],
+                [{ 'align': [] }],
+                ['clean'],
+                ['table-better']
+            ];
+
+            var options = {
+                theme: 'snow',
+                modules: {
+                    toolbar: toolbarOptions,
+                    table: false,
+                    'table-better': {
+                        toolbarTable: true,
+                        menus: ['column', 'row', 'merge', 'table', 'cell', 'wrap', 'copy', 'delete'],
+                    },
+                    keyboard: {
+                        bindings: QuillTableBetter.keyboardBindings
+                    }
+                }
+            };
+
+            var editor = new Quill(rootEl, options);
 
             function getCsrfToken() {
                 var meta = document.querySelector('meta[name="csrf-token"]');
@@ -198,10 +203,10 @@
 
                     uploadImage(file)
                         .then(function (json) {
-                            var range = quill.getSelection(true);
-                            var index = range ? range.index : quill.getLength();
-                            quill.insertEmbed(index, 'image', json.url);
-                            quill.setSelection(index + 1);
+                            var range = editor.getSelection(true);
+                            var index = range ? range.index : editor.getLength();
+                            editor.insertEmbed(index, 'image', json.url);
+                            editor.setSelection(index + 1);
                         })
                         .catch(function () {
                             alert('Image upload failed.');
@@ -209,79 +214,25 @@
                 };
             }
 
-            if (toolbarEl && toolbarEl.children.length === 0) {
-                toolbarEl.innerHTML = [
-                    '<span class="ql-formats">',
-                    '<select class="ql-font"></select>',
-                    '<select class="ql-size"></select>',
-                    '</span>',
-                    '<span class="ql-formats">',
-                    '<select class="ql-header">',
-                    '<option selected></option>',
-                    '<option value="1"></option>',
-                    '<option value="2"></option>',
-                    '<option value="3"></option>',
-                    '<option value="4"></option>',
-                    '<option value="5"></option>',
-                    '<option value="6"></option>',
-                    '</select>',
-                    '</span>',
-                    '<span class="ql-formats">',
-                    '<button class="ql-bold"></button>',
-                    '<button class="ql-italic"></button>',
-                    '<button class="ql-underline"></button>',
-                    '<button class="ql-strike"></button>',
-                    '</span>',
-                    '<span class="ql-formats">',
-                    '<select class="ql-color"></select>',
-                    '<select class="ql-background"></select>',
-                    '</span>',
-                    '<span class="ql-formats">',
-                    '<button class="ql-script" value="sub"></button>',
-                    '<button class="ql-script" value="super"></button>',
-                    '</span>',
-                    '<span class="ql-formats">',
-                    '<button class="ql-list" value="ordered"></button>',
-                    '<button class="ql-list" value="bullet"></button>',
-                    '<button class="ql-indent" value="-1"></button>',
-                    '<button class="ql-indent" value="+1"></button>',
-                    '</span>',
-                    '<span class="ql-formats">',
-                    '<select class="ql-align"></select>',
-                    '<button class="ql-direction" value="rtl"></button>',
-                    '</span>',
-                    '<span class="ql-formats">',
-                    '<button class="ql-blockquote"></button>',
-                    '<button class="ql-code-block"></button>',
-                    '</span>',
-                    '<span class="ql-formats">',
-                    '<button class="ql-link"></button>',
-                    '<button class="ql-image"></button>',
-                    '<button class="ql-video"></button>',
-                    '</span>',
-                    '<span class="ql-formats">',
-                    '<button class="ql-clean"></button>',
-                    '</span>'
-                ].join('');
+            var toolbar = editor.getModule('toolbar');
+            if (toolbar && typeof toolbar.addHandler === 'function') {
+                toolbar.addHandler('image', imageHandler);
             }
 
-            var quill = new Quill(editorEl, {
-                theme: 'snow',
-                modules: {
-                    toolbar: {
-                        container: toolbarEl || '#content-toolbar',
-                        handlers: {
-                            image: imageHandler
-                        }
-                    }
-                }
-            });
+            var html = inputEl.value || '';
+            if (html !== '') {
+                var delta = editor.clipboard.convert({ html: html });
+                var range = editor.getSelection();
+                editor.updateContents(delta, Quill.sources.USER);
+                editor.setSelection(delta.length() - ((range && range.length) ? range.length : 0), Quill.sources.SILENT);
+                editor.scrollSelectionIntoView();
+            }
 
-            var form = editorEl.closest('form');
+            var form = rootEl.closest('form');
             if (!form) return;
 
             form.addEventListener('submit', function () {
-                inputEl.value = quill.root.innerHTML;
+                inputEl.value = editor.getSemanticHTML();
             });
         })();
     </script>

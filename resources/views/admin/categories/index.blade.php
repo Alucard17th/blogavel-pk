@@ -18,7 +18,7 @@
     @if ($categories->count() === 0)
         <p>No categories.</p>
     @else
-        <table>
+        <table class="admin-table">
             <thead>
                 <tr>
                     <th>ID</th>

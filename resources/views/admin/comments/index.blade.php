@@ -13,7 +13,7 @@
     @if ($comments->count() === 0)
         <p>No comments.</p>
     @else
-        <table>
+        <table class="admin-table">
             <thead>
                 <tr>
                     <th>ID</th>

@@ -18,7 +18,7 @@
     @if ($tags->count() === 0)
         <p>No tags.</p>
     @else
-        <table>
+        <table class="admin-table">
             <thead>
                 <tr>
                     <th>ID</th>
