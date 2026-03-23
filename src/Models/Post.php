@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Blogavel\Blogavel\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Blogavel\Blogavel\Models\Category;
 use Blogavel\Blogavel\Models\Comment;
@@ -17,6 +19,10 @@ final class Post extends Model
     use HasFactory;
 
     protected $table = 'blogavel_posts';
+
+    protected $appends = [
+        'featured_image_url',
+    ];
 
     protected $fillable = [
         'category_id',
@@ -47,6 +53,27 @@ final class Post extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query
+            ->where('status', 'published')
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
+    }
+
+    public function getFeaturedImageUrlAttribute(): ?string
+    {
+        $media = $this->featuredMedia;
+
+        if (! $media || $media->path === null || $media->path === '') {
+            return null;
+        }
+
+        $disk = (string) ($media->disk ?: 'public');
+
+        return Storage::disk($disk)->url((string) $media->path);
     }
 
     public function category()

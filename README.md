@@ -230,6 +230,24 @@ Blogavel uses Eloquent models and ships migrations that create (at least) the fo
 - `blogavel_media`
 - `blogavel_post_tag` (pivot)
 
+## Fetching posts in your app
+
+Blogavel ships Eloquent models you can use directly.
+
+Example: fetch a published post (by slug) with its featured image URL:
+
+```php
+use Blogavel\Blogavel\Models\Post;
+
+$post = Post::query()
+    ->published()
+    ->with('featuredMedia')
+    ->where('slug', $slug)
+    ->firstOrFail();
+
+$featuredImageUrl = $post->featured_image_url;
+```
+
 ## Posts: author + views
 
 Blogavel posts support:
