@@ -55,6 +55,16 @@ final class Post extends Model
         return 'slug';
     }
 
+    public function getContentAttribute($value): ?string
+    {
+        return self::normalizeHtmlWhitespace($value);
+    }
+
+    public function setContentAttribute($value): void
+    {
+        $this->attributes['content'] = self::normalizeHtmlWhitespace($value);
+    }
+
     public function scopePublished(Builder $query): Builder
     {
         return $query
@@ -74,6 +84,24 @@ final class Post extends Model
         $disk = (string) ($media->disk ?: 'public');
 
         return Storage::disk($disk)->url((string) $media->path);
+    }
+
+    private static function normalizeHtmlWhitespace($html): ?string
+    {
+        if ($html === null) {
+            return null;
+        }
+
+        $html = (string) $html;
+
+        if ($html === '') {
+            return '';
+        }
+
+        $html = str_replace(["\u{00A0}", "\xC2\xA0"], ' ', $html);
+        $html = str_ireplace(['&nbsp;', '&#160;', '&#xa0;'], ' ', $html);
+
+        return $html;
     }
 
     public function category()

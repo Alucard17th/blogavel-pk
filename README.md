@@ -248,6 +248,12 @@ $post = Post::query()
 $featuredImageUrl = $post->featured_image_url;
 ```
 
+### Content whitespace normalization
+
+Rich-text editors and copy/paste from sources like Google Docs/Word can introduce non-breaking spaces (NBSP, `&nbsp;` / `\u00A0`) into HTML.
+
+To prevent long unbreakable lines (horizontal overflow) and to improve excerpt/SEO text generation, Blogavel normalizes post `content` by converting NBSP whitespace into regular spaces.
+
 ## Posts: author + views
 
 Blogavel posts support:
